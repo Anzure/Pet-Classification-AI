@@ -25,26 +25,23 @@ def load_data():
 dataset = load_data()
 training_data = dataset[0]
 training_labels = dataset[1]
+print(f"Training data: {len(training_data)}")
 
 # Neural network
 model = Sequential()
 
-model.add(Conv2D(64, (3, 3), input_shape=training_data.shape[1:]))
-model.add(Activation('relu'))
+model.add(Conv2D(64, (3, 3), activation='relu', input_shape=training_data.shape[1:]))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
-model.add(Conv2D(64, (3, 3)))
-model.add(Activation('relu'))
+model.add(Conv2D(64, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
-model.add(Conv2D(64, (3, 3)))
-model.add(Activation('relu'))
+model.add(Conv2D(64, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Flatten())
 
-model.add(Dense(1))
-model.add(Activation('sigmoid'))
+model.add(Dense(1, activation='sigmoid'))
 
 # Train model
 model.compile(loss='binary_crossentropy',

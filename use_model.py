@@ -16,15 +16,15 @@ def get_image(target_path):
 
 
 # Load data
-file_path = r'C:\Dev\AI\mjau.jpg'
+file_path = r'C:\Dev\AI\voff.jpg'
 test_data = get_image(file_path)
 test_image = test_data[0]
 
 # Use model
 model = keras.models.load_model("katteroghunder.model")
-predictions = model.predict([test_image])
-test_result = CATEGORIES[int(predictions[0][0])]
-print(predictions[0][0])
+prediction = model.predict([test_image])[0]
+test_result = CATEGORIES[int(prediction[0])]
+print(str(round(prediction[0], 3)))
 print(f"Resultat: {test_result}")
 
 # Show results
