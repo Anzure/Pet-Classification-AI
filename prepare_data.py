@@ -16,9 +16,11 @@ def load_data():
         class_num = CATEGORIES.index(category)
         for img in tqdm(os.listdir(dir_path)):
             try:
-                grey_image = cv2.imread(os.path.join(dir_path, img), cv2.IMREAD_GRAYSCALE)
-                grey_image = cv2.resize(grey_image, (IMG_SIZE, IMG_SIZE))
-                labeled_data_map.append([grey_image, class_num])
+                image = cv2.imread(os.path.join(dir_path, img))
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
+                image = np.array(image) / 255
+                labeled_data_map.append([image, class_num])
             except Exception as e:
                 pass
     return labeled_data_map
@@ -46,7 +48,7 @@ training_labels = []
 for features, label in dataset:
     training_data.append(features)
     training_labels.append(label)
-training_data = np.array(training_data).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
+#training_data = np.array(training_data).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
 
 # Save data
 save_data(training_data, training_labels)
