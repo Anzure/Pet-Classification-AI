@@ -25,8 +25,8 @@ def load_data():
     return data, labels
 
 
-def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size):
-    NAME = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}.run4"
+def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, epochs):
+    NAME = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}-{epochs}.{int(time.time())}"
     tensorboard = TensorBoard(log_dir="logs/{}".format(NAME))
 
     # Neural network
@@ -48,8 +48,9 @@ def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size):
     model.compile(loss='sparse_categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
-    model.fit(training_data, training_labels, batch_size=32, epochs=10, validation_split=0.3, callbacks=[tensorboard])
-    # model.save('katteroghunder.model')
+    model.fit(training_data, training_labels, batch_size=32, epochs=epochs, validation_split=0.3,
+              callbacks=[tensorboard])
+    model.save('katteroghunder.model')
 
 
 # Load data
@@ -58,13 +59,13 @@ training_data = dataset[0]
 training_labels = dataset[1]
 print(f"Training data: {len(training_data)}")
 
-# Train model
-train_model(64, 3, 128, 2, 32)
-train_model(32, 3, 64, 1, 64)
-train_model(64, 3, 64, 2, 32)
-train_model(16, 3, 64, 1, 64)
-train_model(64, 2, 64, 1, 32)
-
+# Train best models
+train_model(16, 3, 64, 1, 64, 7)
+#train_model(32, 3, 64, 1, 64, 7)
+#train_model(16, 3, 64, 1, 64, 8)
+#train_model(32, 3, 64, 1, 64, 8)
+#train_model(64, 3, 64, 2, 32, 10)
+#train_model(64, 3, 128, 2, 32, 10)
 sys.exit(0)
 
 # Training parameters
@@ -81,6 +82,6 @@ for input_size in input_sizes:
             for dense_layer in dense_layers:
                 for dense_size in dense_sizes:
                     try:
-                        train_model(input_size, conv_layer, conv_size, dense_layer, dense_size)
+                        train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, 10)
                     except Exception as e:
                         pass

@@ -15,7 +15,7 @@ def get_image(target_path):
 
 
 # Load data
-file_path = r'C:\Dev\AI\katt.jpg'
+file_path = r'C:\Dev\AI\mjau.jpg'
 test_image = get_image(file_path)
 test_input = np.array([test_image]) / 255
 
