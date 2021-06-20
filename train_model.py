@@ -4,6 +4,7 @@ from tensorflow.keras.callbacks import TensorBoard
 import numpy as np
 import pickle
 import time
+import sys
 from tensorflow.keras.mixed_precision import experimental as mixed_precision
 
 policy = mixed_precision.Policy('mixed_float16')
@@ -25,7 +26,7 @@ def load_data():
 
 
 def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size):
-    NAME = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}.run2"
+    NAME = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}.run4"
     tensorboard = TensorBoard(log_dir="logs/{}".format(NAME))
 
     # Neural network
@@ -56,6 +57,15 @@ dataset = load_data()
 training_data = dataset[0]
 training_labels = dataset[1]
 print(f"Training data: {len(training_data)}")
+
+# Train model
+train_model(64, 3, 128, 2, 32)
+train_model(32, 3, 64, 1, 64)
+train_model(64, 3, 64, 2, 32)
+train_model(16, 3, 64, 1, 64)
+train_model(64, 2, 64, 1, 32)
+
+sys.exit(0)
 
 # Training parameters
 input_sizes = [16, 32, 64]
