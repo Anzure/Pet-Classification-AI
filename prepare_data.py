@@ -19,7 +19,13 @@ def load_data():
                 image = cv2.imread(os.path.join(dir_path, img))
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
+                image90 = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+                image180 = cv2.rotate(image, cv2.ROTATE_180)
+                image270 = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
                 image = np.array(image) / 255
+                #labeled_data_map.append([np.array(image90) / 255, class_num])
+                #labeled_data_map.append([np.array(image180) / 255, class_num])
+                #labeled_data_map.append([np.array(image270) / 255, class_num])
                 labeled_data_map.append([image, class_num])
             except Exception as e:
                 pass
@@ -29,10 +35,12 @@ def load_data():
 def save_data(data, labels):
     pickle_out = open("X.pickle", "wb")
     pickle.dump(data, pickle_out)
+    pickle_out.flush()
     pickle_out.close()
 
     pickle_out = open("y.pickle", "wb")
     pickle.dump(labels, pickle_out)
+    pickle_out.flush()
     pickle_out.close()
     return
 
@@ -48,7 +56,8 @@ training_labels = []
 for features, label in dataset:
     training_data.append(features)
     training_labels.append(label)
-#training_data = np.array(training_data).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
 
 # Save data
+print("Saving data...")
 save_data(training_data, training_labels)
+print("Saved data!")
