@@ -20,15 +20,15 @@ def load_data():
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
                 # image90 = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
-                image90 = cv2.blur(image, (5, 5))
+                # image90 = cv2.blur(image, (5, 5))
                 # image180 = cv2.rotate(image, cv2.ROTATE_180)
-                image180 = cv2.GaussianBlur(image, (5, 5), 0)
+                # image180 = cv2.GaussianBlur(image, (5, 5), 0)
                 # image270 = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
-                image270 = cv2.medianBlur(image, 5)
+                # image270 = cv2.medianBlur(image, 5)
                 image = np.array(image) / 255
-                labeled_data_map.append([np.array(image90) / 255, class_num])
-                labeled_data_map.append([np.array(image180) / 255, class_num])
-                labeled_data_map.append([np.array(image270) / 255, class_num])
+                # labeled_data_map.append([np.array(image90) / 255, class_num])
+                # labeled_data_map.append([np.array(image180) / 255, class_num])
+                # labeled_data_map.append([np.array(image270) / 255, class_num])
                 labeled_data_map.append([image, class_num])
             except Exception as e:
                 pass

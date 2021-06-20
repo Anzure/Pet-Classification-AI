@@ -29,13 +29,13 @@ def load_data():
 
 
 def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, dropout_size, epochs):
-    model_name = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}-{dropout_size}-{epochs}_run12"
+    model_name = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}-{dropout_size}-{epochs}_run13"
     tensorboard = TensorBoard(log_dir="logs/{}".format(f"{model_name} {int(time.time())}"))
 
     # Neural network
     model = Sequential()
     model.add(Conv2D(input_size, (3, 3), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 3)))
-    model.add(Dropout(0.1))
+    model.add(Dropout(dropout_size))
 
     for l in range(conv_layer):
         model.add(MaxPooling2D((2, 2)))
@@ -45,7 +45,7 @@ def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, drop
     model.add(Flatten())
 
     for n in range(dense_layer):
-        model.add(Dense(dense_size, activation='relu', kernel_regularizer=keras.regularizers.l2(0.01)))
+        model.add(Dense(dense_size, activation='relu', kernel_regularizer=keras.regularizers.l2(0.05)))
         model.add(Dropout(dropout_size))
 
     model.add(Dense(2, activation='softmax'))
@@ -66,7 +66,7 @@ training_labels = dataset[1]
 print(f"Training data: {len(training_data)}")
 
 # Train best models
-train_model(32, 3, 64, 1, 64, 0.3, 30)
+train_model(32, 3, 64, 1, 64, 0.2, 30)
 sys.exit(0)
 
 # Training parameters
