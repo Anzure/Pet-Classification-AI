@@ -29,7 +29,7 @@ def load_data():
 
 
 def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, dropout_size, epochs):
-    model_name = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}-{dropout_size}-{epochs}_run11"
+    model_name = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}-{dropout_size}-{epochs}_run12"
     tensorboard = TensorBoard(log_dir="logs/{}".format(f"{model_name} {int(time.time())}"))
 
     # Neural network
@@ -66,7 +66,7 @@ training_labels = dataset[1]
 print(f"Training data: {len(training_data)}")
 
 # Train best models
-train_model(16, 3, 64, 1, 64, 0.3, 30)
+train_model(32, 3, 64, 1, 64, 0.3, 30)
 sys.exit(0)
 
 # Training parameters
