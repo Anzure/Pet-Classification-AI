@@ -35,6 +35,7 @@ def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, drop
     # Neural network
     model = Sequential()
     model.add(Conv2D(input_size, (3, 3), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 3)))
+    model.add(Dropout(dropout_size))
 
     for l in range(conv_layer):
         model.add(MaxPooling2D((2, 2)))
@@ -44,7 +45,7 @@ def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, drop
     model.add(Flatten())
 
     for n in range(dense_layer):
-        model.add(Dense(dense_size, activation='relu', kernel_regularizer=keras.regularizers.l2(0.01)))
+        model.add(Dense(dense_size, activation='relu', kernel_regularizer=keras.regularizers.l2(0.05)))
         model.add(Dropout(dropout_size))
 
     model.add(Dense(2, activation='softmax'))
