@@ -13,7 +13,7 @@ tf.random.set_seed(1337)
 policy = mixed_precision.Policy('mixed_float16')
 mixed_precision.set_policy(policy)
 
-IMG_SIZE = 70
+IMG_SIZE = 90
 
 
 def load_data():
@@ -40,8 +40,8 @@ def load_data():
     return (train_data, train_labels), (test_data, test_labels)
 
 
-def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, dropout_size, epochs):
-    model_name = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}-{dropout_size}-{epochs}_run13"
+def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, dropout_size, epochs, l2):
+    model_name = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}-{dropout_size}-{epochs}-{l2}_run0"
     tensorboard = TensorBoard(log_dir="logs/{}".format(f"{model_name} {int(time.time())}"))
 
     # Neural network
@@ -57,7 +57,7 @@ def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, drop
     model.add(Flatten())
 
     for n in range(dense_layer):
-        model.add(Dense(dense_size, activation='relu', kernel_regularizer=keras.regularizers.l2(0.05)))
+        model.add(Dense(dense_size, activation='relu', kernel_regularizer=keras.regularizers.l2(l2)))
         model.add(Dropout(dropout_size))
 
     model.add(Dense(2, activation='softmax'))
@@ -77,17 +77,18 @@ print(f"Training data size: {len(training_data)}")
 print(f"Testing data size: {len(testing_data)}")
 
 # Train best models
-train_model(32, 3, 64, 1, 64, 0.2, 30)
+train_model(32, 3, 64, 1, 64, 0.3, 50, 0.05)
 sys.exit(0)
 
 # Training parameters
-input_sizes = [16]
-conv_layers = [3]
-conv_sizes = [64]
+input_sizes = [32, 64]
+conv_layers = [3, 4]
+conv_sizes = [64, 128]
 dense_layers = [1]
-dense_sizes = [64]
-epoch_lengths = [15]
-dropout_sizes = [0.5, 0.7, 0.8]
+dense_sizes = [64, 128]
+epoch_lengths = [20]
+dropout_sizes = [0.2, 0.3, 0.4]
+l2_sizes = [0.01, 0.05]
 
 # Train multiple models
 for input_size in input_sizes:
@@ -97,8 +98,10 @@ for input_size in input_sizes:
                 for dense_size in dense_sizes:
                     for epoch_length in epoch_lengths:
                         for dropout_size in dropout_sizes:
-                            try:
-                                train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, dropout_size,
-                                            epoch_length)
-                            except Exception as e:
-                                pass
+                            for l2_size in l2_sizes:
+                                try:
+                                    train_model(input_size, conv_layer, conv_size, dense_layer, dense_size,
+                                                dropout_size,
+                                                epoch_length, l2_size)
+                                except Exception as e:
+                                    pass

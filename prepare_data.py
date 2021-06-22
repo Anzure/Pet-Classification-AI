@@ -6,8 +6,9 @@ import random
 import numpy as np
 
 CATEGORIES = ["Dog", "Cat"]
-IMG_SIZE = 70
-VALIDATION_SPLIT = 0.3
+IMG_SIZE = 90
+SCALED_IMG_SIZE = 70
+VALIDATION_SPLIT = 0.2
 
 
 def load_data():
@@ -24,12 +25,20 @@ def load_data():
                 src_image = cv2.imread(os.path.join(dir_path, img))
                 src_image = cv2.cvtColor(src_image, cv2.COLOR_BGR2RGB)
                 if progress < size * VALIDATION_SPLIT:
-                    image = cv2.resize(src_image, (IMG_SIZE, IMG_SIZE))
+                    image = cv2.resize(src_image, (SCALED_IMG_SIZE, SCALED_IMG_SIZE))
+                    image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
                     image = np.array(image) / 255
                     testing_map.append([image, class_num])
                 else:
-                    for n in [60, 70]:
+                    for r in range(0, 3):
+                        n = random.randint(60, 90)
                         image = cv2.resize(src_image, (n, n))
+                        if random.randint(0, 5) == 1:
+                            image = cv2.blur(image, (5, 5))
+                        if random.randint(0, 5) == 1:
+                            image = cv2.GaussianBlur(image, (5, 5), 0)
+                        if random.randint(0, 5) == 1:
+                            image = cv2.medianBlur(image, 5)
                         image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
                         image = np.array(image) / 255
                         training_map.append([image, class_num])
