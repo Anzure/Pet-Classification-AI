@@ -2,12 +2,14 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Activation, Flatten, Dropout
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow import keras
+import tensorflow as tf
 import numpy as np
 import pickle
 import time
 import sys
 from tensorflow.keras.mixed_precision import experimental as mixed_precision
 
+tf.random.set_seed(1337)
 policy = mixed_precision.Policy('mixed_float16')
 mixed_precision.set_policy(policy)
 
@@ -15,17 +17,27 @@ IMG_SIZE = 70
 
 
 def load_data():
-    pickle_in = open("X.pickle", "rb")
-    data = pickle.load(pickle_in)
+    pickle_in = open("X_train.pickle", "rb")
+    train_data = pickle.load(pickle_in)
     pickle_in.close()
 
-    pickle_in = open("y.pickle", "rb")
-    labels = pickle.load(pickle_in)
+    pickle_in = open("y_train.pickle", "rb")
+    train_labels = pickle.load(pickle_in)
     pickle_in.close()
 
-    data = np.array(data)
-    labels = np.array(labels)
-    return data, labels
+    pickle_in = open("X_test.pickle", "rb")
+    test_data = pickle.load(pickle_in)
+    pickle_in.close()
+
+    pickle_in = open("y_test.pickle", "rb")
+    test_labels = pickle.load(pickle_in)
+    pickle_in.close()
+
+    train_data = np.array(train_data)
+    train_labels = np.array(train_labels)
+    test_data = np.array(test_data)
+    test_labels = np.array(test_labels)
+    return (train_data, train_labels), (test_data, test_labels)
 
 
 def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, dropout_size, epochs):
@@ -54,16 +66,15 @@ def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, drop
     model.compile(loss='sparse_categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
-    model.fit(training_data, training_labels, batch_size=32, epochs=epochs, validation_split=0.3,
-              callbacks=[tensorboard])
+    model.fit(x=training_data, y=training_labels, batch_size=32, epochs=epochs,
+              validation_data=(testing_data, testing_labels), callbacks=[tensorboard])
     model.save('katteroghunder.model')
 
 
 # Load data
-dataset = load_data()
-training_data = dataset[0]
-training_labels = dataset[1]
-print(f"Training data: {len(training_data)}")
+(training_data, training_labels), (testing_data, testing_labels) = load_data()
+print(f"Training data size: {len(training_data)}")
+print(f"Testing data size: {len(testing_data)}")
 
 # Train best models
 train_model(32, 3, 64, 1, 64, 0.2, 30)
