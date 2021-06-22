@@ -66,7 +66,7 @@ def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, drop
     model.compile(loss='sparse_categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
-    model.fit(x=training_data, y=training_labels, batch_size=32, epochs=epochs,
+    model.fit(training_data, training_labels, batch_size=32, epochs=epochs,
               validation_data=(testing_data, testing_labels), callbacks=[tensorboard])
     model.save('katteroghunder.model')
 

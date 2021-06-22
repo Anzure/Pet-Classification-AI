@@ -21,14 +21,18 @@ def load_data():
         progress = 0
         for img in tqdm(files):
             try:
-                image = cv2.imread(os.path.join(dir_path, img))
-                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
-                image = np.array(image) / 255
+                src_image = cv2.imread(os.path.join(dir_path, img))
+                src_image = cv2.cvtColor(src_image, cv2.COLOR_BGR2RGB)
                 if progress < size * VALIDATION_SPLIT:
+                    image = cv2.resize(src_image, (IMG_SIZE, IMG_SIZE))
+                    image = np.array(image) / 255
                     testing_map.append([image, class_num])
                 else:
-                    training_map.append([image, class_num])
+                    for n in [60, 70]:
+                        image = cv2.resize(src_image, (n, n))
+                        image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
+                        image = np.array(image) / 255
+                        training_map.append([image, class_num])
                 progress += 1
             except Exception as e:
                 pass
@@ -40,7 +44,7 @@ def load_data():
 def split_data(full_dataset):
     data_list = []
     label_list = []
-    for feature, label in training_dataset:
+    for feature, label in full_dataset:
         data_list.append(feature)
         label_list.append(label)
     return data_list, label_list
