@@ -1,12 +1,14 @@
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Activation, Flatten, Dropout
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow import keras
 import tensorflow as tf
 import numpy as np
 import pickle
 import time
-import sys
+from kerastuner.applications import HyperResNet
+from kerastuner.tuners import Hyperband
+import keras_tuner as kt
 from tensorflow.keras.mixed_precision import experimental as mixed_precision
 
 tf.random.set_seed(1337)
@@ -41,7 +43,7 @@ def load_data():
 
 
 def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, dropout_size, epochs, l2):
-    model_name = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}-{dropout_size}-{epochs}-{l2}_run0"
+    model_name = f"{input_size}-{conv_layer}-{conv_size}-{dense_layer}-{dense_size}-{dropout_size}-{epochs}-{l2}_run1"
     tensorboard = TensorBoard(log_dir="logs/{}".format(f"{model_name} {int(time.time())}"))
 
     # Neural network
@@ -73,35 +75,40 @@ def train_model(input_size, conv_layer, conv_size, dense_layer, dense_size, drop
 
 # Load data
 (training_data, training_labels), (testing_data, testing_labels) = load_data()
+training_labels = keras.utils.to_categorical(training_labels, num_classes=2)
+testing_labels = keras.utils.to_categorical(testing_labels, num_classes=2)
 print(f"Training data size: {len(training_data)}")
 print(f"Testing data size: {len(testing_data)}")
 
-# Train best models
-train_model(32, 3, 64, 1, 64, 0.3, 50, 0.05)
-sys.exit(0)
 
-# Training parameters
-input_sizes = [32, 64]
-conv_layers = [3, 4]
-conv_sizes = [64, 128]
-dense_layers = [1]
-dense_sizes = [64, 128]
-epoch_lengths = [20]
-dropout_sizes = [0.2, 0.3, 0.4]
-l2_sizes = [0.01, 0.05]
+# Train best model
+#train_model(32, 3, 64, 1, 64, 0.3, 50, 0.05)
+#sys.exit(0)
 
-# Train multiple models
-for input_size in input_sizes:
-    for conv_layer in conv_layers:
-        for conv_size in conv_sizes:
-            for dense_layer in dense_layers:
-                for dense_size in dense_sizes:
-                    for epoch_length in epoch_lengths:
-                        for dropout_size in dropout_sizes:
-                            for l2_size in l2_sizes:
-                                try:
-                                    train_model(input_size, conv_layer, conv_size, dense_layer, dense_size,
-                                                dropout_size,
-                                                epoch_length, l2_size)
-                                except Exception as e:
-                                    pass
+# Custom hyper model
+class MyHyperModel(kt.HyperModel):
+    def build(self, hp):
+        model = Sequential()
+        model.add(
+            Conv2D(hp.Choice('units', [32, 64, 128]), (3, 3), activation='relu',
+                   input_shape=(IMG_SIZE, IMG_SIZE, 3)))
+        model.add(Dense(2, activation='softmax'))
+        model.compile(loss='sparse_categorical_crossentropy',
+                      optimizer='adam',
+                      metrics=['accuracy'])
+        return model
+
+
+# Keras tuning
+early_stopping = keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=5)
+hypermodel = HyperResNet(input_shape=(IMG_SIZE, IMG_SIZE, 3), classes=2)
+
+tuner = Hyperband(
+    hypermodel,
+    objective='val_accuracy',
+    max_epochs=20,
+    directory='tuner',
+    project_name='tuning')
+
+tuner.search(x=training_data, y=training_labels, epochs=15, batch_size=32,
+             validation_data=(testing_data, testing_labels), callbacks=[early_stopping])
