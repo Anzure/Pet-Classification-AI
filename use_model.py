@@ -2,15 +2,13 @@ from tensorflow import keras
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-
-CATEGORIES = ["Hund", "Katt"]
-IMG_SIZE = 70
+from settings import image_size, categories, scaled_image_size
 
 
 def get_image(target_path):
     image = cv2.imread(target_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
+    image = cv2.resize(image, (image_size, image_size))
     return image
 
 
@@ -24,7 +22,7 @@ model = keras.models.load_model("katteroghunder.model")
 prediction = model.predict(test_input)[0]
 print("Debug", prediction)
 print("Argmax", np.argmax(prediction))
-result = CATEGORIES[np.argmax(prediction)]
+result = categories[np.argmax(prediction)]
 confidence = int(prediction[np.argmax(prediction)] * 100)
 print(f"Resultat: {result}")
 

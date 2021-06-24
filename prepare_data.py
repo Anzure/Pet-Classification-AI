@@ -4,19 +4,17 @@ from tqdm import tqdm
 import pickle
 import random
 import numpy as np
+from settings import image_size, categories, scaled_image_size
 
-CATEGORIES = ["Dog", "Cat"]
-IMG_SIZE = 90
-SCALED_IMG_SIZE = 70
 VALIDATION_SPLIT = 0.2
 
 
 def load_data():
     training_map = []
     testing_map = []
-    for category in CATEGORIES:
+    for category in categories():
         dir_path = os.path.join(category)
-        class_num = CATEGORIES.index(category)
+        class_num = categories().index(category)
         files = os.listdir(dir_path)
         size = len(files)
         progress = 0
@@ -25,21 +23,21 @@ def load_data():
                 src_image = cv2.imread(os.path.join(dir_path, img))
                 src_image = cv2.cvtColor(src_image, cv2.COLOR_BGR2RGB)
                 if progress < size * VALIDATION_SPLIT:
-                    image = cv2.resize(src_image, (SCALED_IMG_SIZE, SCALED_IMG_SIZE))
-                    image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
+                    image = cv2.resize(src_image, (scaled_image_size(), scaled_image_size()))
+                    image = cv2.resize(image, (image_size(), image_size()))
                     image = np.array(image) / 255
                     testing_map.append([image, class_num])
                 else:
-                    for r in range(0, 3):
+                    for r in range(0, 2):
                         n = random.randint(60, 90)
                         image = cv2.resize(src_image, (n, n))
-                        if random.randint(0, 5) == 1:
-                            image = cv2.blur(image, (5, 5))
-                        if random.randint(0, 5) == 1:
-                            image = cv2.GaussianBlur(image, (5, 5), 0)
-                        if random.randint(0, 5) == 1:
-                            image = cv2.medianBlur(image, 5)
-                        image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
+                        # if random.randint(0, 5) == 1:
+                        #    image = cv2.blur(image, (5, 5))
+                        # if random.randint(0, 5) == 1:
+                        #    image = cv2.GaussianBlur(image, (5, 5), 0)
+                        # if random.randint(0, 5) == 1:
+                        #    image = cv2.medianBlur(image, 5)
+                        image = cv2.resize(image, (image_size(), image_size()))
                         image = np.array(image) / 255
                         training_map.append([image, class_num])
                 progress += 1
