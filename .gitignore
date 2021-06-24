@@ -1,8 +1,8 @@
 tuner
 tuning
-Cat
-Dog
-katteroghunder.model
+Hund
+Katt
+kjaledyr.model
 logs
 *.pickle
 *.ipynb
