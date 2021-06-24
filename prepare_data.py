@@ -28,7 +28,7 @@ def load_data():
                     image = np.array(image) / 255
                     testing_map.append([image, class_num])
                 else:
-                    for r in range(0, 2):
+                    for r in range(0, 3):
                         n = random.randint(60, 90)
                         image = cv2.resize(src_image, (n, n))
                         # if random.randint(0, 5) == 1:

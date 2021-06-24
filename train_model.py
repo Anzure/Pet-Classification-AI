@@ -23,16 +23,22 @@ def train_model():
     model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(image_size(), image_size(), 3)))
     model.add(Dropout(0.3))
 
-    for l in range(3):
-        model.add(MaxPooling2D((2, 2)))
-        model.add(Conv2D(64, (3, 3), activation='relu'))
-        model.add(Dropout(0.3))
+    model.add(MaxPooling2D((2, 2)))
+    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(Dropout(0.3))
+
+    model.add(MaxPooling2D((2, 2)))
+    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(Dropout(0.3))
+
+    model.add(MaxPooling2D((2, 2)))
+    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(Dropout(0.3))
 
     model.add(Flatten())
 
-    for n in range(1):
-        model.add(Dense(64, activation='relu', kernel_regularizer=regularizers.l2(0.05)))
-        model.add(Dropout(0.3))
+    model.add(Dense(64, activation='relu', kernel_regularizer=regularizers.l2(0.05)))
+    model.add(Dropout(0.3))
 
     model.add(Dense(2, activation='softmax'))
 
@@ -40,8 +46,12 @@ def train_model():
     model.compile(loss='sparse_categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
-    model.fit(x=training_data, y=training_labels, batch_size=32, epochs=30,
-              validation_data=(testing_data, testing_labels), callbacks=[tensorboard])
+    model.fit(x=training_data,
+              y=training_labels,
+              batch_size=32,
+              epochs=30,
+              validation_data=(testing_data, testing_labels),
+              callbacks=[tensorboard])
     model.save('kjaledyr.model')
 
 
