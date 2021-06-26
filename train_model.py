@@ -2,16 +2,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras import regularizers
-from tensorflow.keras.mixed_precision import experimental as mixed_precision
-import tensorflow as tf
 import time
 import sys as system
 from load_data import get_data
 from settings import image_size
-
-tf.random.set_seed(1337)
-policy = mixed_precision.Policy('mixed_float16')
-mixed_precision.set_policy(policy)
 
 
 def train_model():
